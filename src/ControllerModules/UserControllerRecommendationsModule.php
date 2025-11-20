@@ -1,10 +1,23 @@
 <?php
 class RecommendationsEngine
 {
+    /**
+     * @var mixed
+     */
     private $media;
+    /**
+     * @var mixed
+     */
     private $list;
+    /**
+     * @var mixed
+     */
     private $allFranchises;
 
+    /**
+     * @param $media
+     * @param $list
+     */
     public function __construct($media, $list)
     {
         $this->media = $media;
@@ -20,6 +33,10 @@ class RecommendationsEngine
         $this->list = $keyedList;
     }
 
+    /**
+     * @param $list
+     * @return mixed
+     */
     private static function addRecsFromRecommendations($list)
     {
         Model_MixedUserMedia::attachRecommendations($list);
@@ -67,13 +84,17 @@ class RecommendationsEngine
             $count = $weightsCount[$key];
             #the more recommendations, the more close it will be to source scores (log scale)
             $const = 1.2;
-            $weight = pow($const, - $count);
+            $weight = pow($const, -$count);
             $weights[$key] = (1 - $weight) * ($sum / max(1, $count)) + $weight * $meanScore;
         }
 
         return $weights;
     }
 
+    /**
+     * @param $media
+     * @return mixed
+     */
     private static function addRecsFromStaticRecommendations($media)
     {
         $staticRecIds = TextHelper::loadSimpleList(Config::$staticRecommendationListPath);
@@ -90,6 +111,10 @@ class RecommendationsEngine
         return $weights;
     }
 
+    /**
+     * @param $weights
+     * @return mixed
+     */
     private static function getRecsFromWeights($weights)
     {
         $entries = Model_MixedUserMedia::getFromIdList(array_keys($weights));
@@ -104,6 +129,10 @@ class RecommendationsEngine
         return $finalEntries;
     }
 
+    /**
+     * @param $input
+     * @param $goal
+     */
     private static function trimByValue($input, $goal)
     {
         arsort($input, SORT_NUMERIC);
@@ -111,16 +140,25 @@ class RecommendationsEngine
         return array_slice($input, 0, $goal);
     }
 
+    /**
+     * @param $input
+     * @param $goal
+     * @return mixed
+     */
     private static function trimByScore($input, $goal)
     {
-        uasort($input, function($a, $b)
-        {
+        uasort($input, function ($a, $b) {
             return $a->hypothetical_score <= $b->hypothetical_score ? 1 : -1;
         });
 
         return array_slice($input, 0, $goal);
     }
 
+    /**
+     * @param $input
+     * @param $filteredKeys
+     * @return mixed
+     */
     private static function filterKeys($input, $filteredKeys)
     {
         $output = [];
@@ -134,6 +172,10 @@ class RecommendationsEngine
         return $output;
     }
 
+    /**
+     * @param $selectedEntries
+     * @return mixed
+     */
     private static function filterBannedGenres($selectedEntries)
     {
         Model_MixedUserMedia::attachGenres($selectedEntries);
@@ -158,6 +200,10 @@ class RecommendationsEngine
         return $finalEntries;
     }
 
+    /**
+     * @param $selectedEntries
+     * @return mixed
+     */
     private static function filterFranchises($selectedEntries)
     {
         $skipAnimeTypes = [
@@ -167,15 +213,15 @@ class RecommendationsEngine
             AnimeMediaType::CM,
             AnimeMediaType::PV,
             AnimeMediaType::TV_Special,
-            AnimeMediaType::Unknown,
+            AnimeMediaType::Unknown
         ];
 
         $skipMangaTypes = [
             MangaMediaType::Oneshot,
             MangaMediaType::Doujinshi,
-            MangaMediaType::Unknown,
+            MangaMediaType::Unknown
         ];
-        
+
         $franchises = Model_MixedUserMedia::getFranchises($selectedEntries, true);
         $finalEntries = [];
 
@@ -193,16 +239,14 @@ class RecommendationsEngine
 
                 if ($entry->media === Media::Anime) {
                     $franchiseSize += $entry->episodes;
-                    
-                    if (in_array($entry->sub_type, $skipAnimeTypes))
-                    {
+
+                    if (in_array($entry->sub_type, $skipAnimeTypes)) {
                         continue;
                     }
                 } elseif ($entry->media === Media::Manga) {
                     $franchiseSize += $entry->chapters;
 
-                    if (in_array($entry->sub_type, $skipMangaTypes))
-                    {
+                    if (in_array($entry->sub_type, $skipMangaTypes)) {
                         continue;
                     }
                 }
@@ -229,6 +273,10 @@ class RecommendationsEngine
         return $finalEntries;
     }
 
+    /**
+     * @param $goal
+     * @return mixed
+     */
     public function getNewRecommendations($goal)
     {
         $dontRecommend = [];
@@ -271,12 +319,14 @@ class RecommendationsEngine
         return $selectedEntries;
     }
 
+    /**
+     * @return mixed
+     */
     public function getMissingTitles()
     {
         $titles = Model_MixedUserMedia::attachMissingRelations($this->list, $this->media);
 
-        $titles = array_filter($titles, function ($title)
-        {
+        $titles = array_filter($titles, function ($title) {
             return $title->status !== UserListStatus::Planned && $title->status !== UserListStatus::Dropped && !empty($title->relations);
         });
 
@@ -285,14 +335,15 @@ class RecommendationsEngine
         return $titles;
     }
 
+    /**
+     * @param $titles
+     */
     public function getMissingTitlesCount($titles)
     {
         $map = [];
 
-        foreach ($titles as $title)
-        {
-            foreach ($title->relations as $relation)
-            {
+        foreach ($titles as $title) {
+            foreach ($title->relations as $relation) {
                 $map[$relation->id] = true;
             }
         }
@@ -303,6 +354,10 @@ class RecommendationsEngine
 
 class UserControllerRecommendationsModule extends AbstractUserControllerModule
 {
+    /**
+     * @param ViewContext $viewContext
+     * @param $media
+     */
     public static function getText(ViewContext $viewContext, $media)
     {
         return 'Recommended';
@@ -318,11 +373,18 @@ class UserControllerRecommendationsModule extends AbstractUserControllerModule
         return [Media::Anime, Media::Manga];
     }
 
+    /**
+     * @return int
+     */
     public static function getOrder()
     {
         return 5;
     }
 
+    /**
+     * @param $controllerContext
+     * @param $viewContext
+     */
     public static function work(&$controllerContext, &$viewContext)
     {
         $viewContext->viewName = 'user-recommendations';
@@ -333,7 +395,11 @@ class UserControllerRecommendationsModule extends AbstractUserControllerModule
         $list = $viewContext->user->getMixedUserMedia($viewContext->media);
         $recsEngine = new RecommendationsEngine($viewContext->media, $list);
 
-        $goal = 20;
+        if (key_exists('goal', $_GET)) {
+            $goal = $_GET['goal'];
+        } else {
+            $goal = 10;
+        }
         $viewContext->newRecommendations = $recsEngine->getNewRecommendations($goal);
         $viewContext->missingTitles = $recsEngine->getMissingTitles();
         $viewContext->missingTitlesCount = $recsEngine->getMissingTitlesCount($viewContext->missingTitles);
