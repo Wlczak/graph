@@ -1,6 +1,6 @@
 FROM php:7.4-alpine
 
-RUN apk add --no-cache curl bash
+# RUN apk add --no-cache curl bash
 
 WORKDIR /app
 
