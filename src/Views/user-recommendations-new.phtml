@@ -1,5 +1,6 @@
 <div class="section original">
 	<h2>Recommendations</h2>
+	<p class="undelete-msg">There are <strong>0</strong> hidden recommendations. <a href="#" class="undelete-trigger">Show them</a></p>
 	<div class="section-body">
 		<?php if ($viewContext->private): ?>
 			<p>Since <?php echo $viewContext->user->name ?>&rsquo;s <?php echo Media::toString($viewContext->media) ?> list is marked as private, we can&rsquo;t reveal its contents by showing recommendations. If this is your list, click <a target="_blank" href="https://myanimelist.net/editprofile.php?go=listpreferences" rel="noreferrer">here</a> to change privacy settings.</p>
@@ -8,7 +9,7 @@
 		<?php else: ?>
 			<ul>
 				<?php foreach ($viewContext->newRecommendations as $entry): ?>
-					<li>
+					<li class="new-recommendation" data-id="<?php echo Media::toString($entry->media) . $entry->mal_id ?>">
 						<a target="_blank" href="<?php echo $entry->mal_link ?>" title="<?php echo htmlspecialchars($entry->title) ?>">
 							<img src="<?php echo $entry->picture_url ?>" alt="<?php echo htmlspecialchars($entry->title) ?>">
 						</a>
@@ -45,13 +46,20 @@
 							<!--<?php printf('%.02f', $entry->hypothetical_score) ?>-->
 						</div>
 
+						<a href="#" class="hide-recommendation"><i data-tooltip="Hide recommendation" class="right icon-small-close"></i>
+						</a>
 						<div class="clear"></div>
 					</li>
 				<?php endforeach ?>
 			</ul>
 			
-			<p style="text-align: center;"
-			><a href="#" id="more-recs" >More recommendations</a></p>
+			<p style="text-align: center;">
+			<a href="#" id="more-recs" >More recommendations</a>
+			<span> | </span>
+			<a href="#" id="show-recs-in-list">
+				<?php echo $viewContext->recommandEntriesInList ? 'Hide' : 'Show' ?>
+				 recommendations already in list</a>
+		</p>
 		<?php endif ?>
 	</div>
 </div>

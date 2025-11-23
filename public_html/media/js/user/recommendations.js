@@ -71,12 +71,12 @@ $(function()
 		{
 			return item.indexOf(media) == 0;
 		});
-		$('.missing .undelete-msg strong').text(filtered.length);
-		$('.missing .undelete-msg').slideDown();
+		$('.undelete-msg strong').text(filtered.length);
+		$('.undelete-msg').slideDown();
 		$.fx.off = prevState;
 	}
 
-	$('.missing .delete-trigger').click(function(e)
+	$('.delete-trigger').click(function(e)
 	{
 		var key = $(this).parents('li').attr('data-id');
 		var hidden = readHidden(userName);
@@ -124,7 +124,7 @@ $(function()
 		});
 	});
 
-	$('.missing .undelete-trigger').click(function(e)
+	$('.undelete-trigger').click(function(e)
 	{
 		var hidden = readHidden(userName);
 		var filtered = $.grep(hidden, function(item, index)
@@ -133,7 +133,7 @@ $(function()
 		});
 		writeHidden(userName, filtered);
 
-		$('.missing .undelete-msg').slideUp(function()
+		$('.undelete-msg').slideUp(function()
 		{
 			$('.missing li.hidden').each(function()
 			{
@@ -142,6 +142,12 @@ $(function()
 			});
 			$('.missing li.hidden').removeClass('hidden');
 		});
+
+		$('li.new-recommendation.hidden').each(function() {
+    		$(this).removeClass('hidden').show();
+		});
+
+
 		e.preventDefault();
 	});
 
@@ -173,11 +179,49 @@ $(function()
 			window.location.search = params.toString();
 		} else {
 			console.log("no goal");
-			goal = 10;
+			goal = 20;
 			params.append('goal', goal);
 			
 			window.location.search = params.toString();
 		}
 		console.log(params);
+	})
+
+	$('#show-recs-in-list').click(function(e)
+	{
+		e.preventDefault();
+
+		let params = new URLSearchParams(window.location.search);
+		if (params.has('recommandInList'))
+		{
+			console.log("has recommandInList");
+			recommandInList = params.get('recommandInList') == "true" ? false : true;
+			params.set('recommandInList', recommandInList);
+			
+			window.location.search = params.toString();
+		} else {
+			console.log("no recommandInList");
+			recommandInList = true;
+			params.append('recommandInList', recommandInList);
+			
+			window.location.search = params.toString();
+		}
+		console.log(params);
+	})
+
+	$('.hide-recommendation').click(function(e)
+	{
+		console.log("hide");
+		e.preventDefault();
+
+		var id = $(this).parents('li').attr('data-id');
+		console.log(id);
+		var hidden = readHidden(userName);
+		hidden.push(id);
+		writeHidden(userName, hidden);
+
+		$('[data-id=\'' + id + '\']').each(function () {
+			hide($(this), true);
+		});
 	})
 });

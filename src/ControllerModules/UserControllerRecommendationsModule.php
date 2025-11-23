@@ -277,14 +277,16 @@ class RecommendationsEngine
      * @param $goal
      * @return mixed
      */
-    public function getNewRecommendations($goal)
+    public function getNewRecommendations($goal,$recommandEntriesInList)
     {
         $dontRecommend = [];
-
-        foreach ($this->allFranchises as $franchise) {
-            foreach ($franchise->allEntries as $entry) {
-                $key = $entry->media . $entry->mal_id;
-                $dontRecommend[$key] = true;
+        
+        if (!$recommandEntriesInList){
+            foreach ($this->allFranchises as $franchise) {
+                foreach ($franchise->allEntries as $entry) {
+                    $key = $entry->media . $entry->mal_id;
+                    $dontRecommend[$key] = true;
+                }
             }
         }
 
@@ -397,10 +399,21 @@ class UserControllerRecommendationsModule extends AbstractUserControllerModule
 
         if (key_exists('goal', $_GET)) {
             $goal = $_GET['goal'];
+            if (!is_numeric($goal)){
+                $goal = 10;
+            }
         } else {
             $goal = 10;
         }
-        $viewContext->newRecommendations = $recsEngine->getNewRecommendations($goal);
+        if (key_exists('recommandInList', $_GET)) {
+            $recommandEntriesInList = $_GET['recommandInList'] == "true" ? true : false;
+        } else {
+            $recommandEntriesInList = false;
+        }
+
+        $viewContext->recommandEntriesInList = $recommandEntriesInList;
+
+        $viewContext->newRecommendations = $recsEngine->getNewRecommendations($goal,$recommandEntriesInList);
         $viewContext->missingTitles = $recsEngine->getMissingTitles();
         $viewContext->missingTitlesCount = $recsEngine->getMissingTitlesCount($viewContext->missingTitles);
         $viewContext->private = $viewContext->user->isUserMediaPrivate($viewContext->media);
