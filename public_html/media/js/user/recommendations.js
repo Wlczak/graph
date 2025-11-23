@@ -172,19 +172,16 @@ $(function()
 		let params = new URLSearchParams(window.location.search);
 		if (params.has('goal'))
 		{
-			console.log("has goal");
 			goal = parseInt(params.get('goal'));
 			params.set('goal', goal + 10);
 			
 			window.location.search = params.toString();
 		} else {
-			console.log("no goal");
 			goal = 20;
 			params.append('goal', goal);
 			
 			window.location.search = params.toString();
 		}
-		console.log(params);
 	})
 
 	$('#show-recs-in-list').click(function(e)
@@ -194,28 +191,23 @@ $(function()
 		let params = new URLSearchParams(window.location.search);
 		if (params.has('recommandInList'))
 		{
-			console.log("has recommandInList");
 			recommandInList = params.get('recommandInList') == "true" ? false : true;
 			params.set('recommandInList', recommandInList);
 			
 			window.location.search = params.toString();
 		} else {
-			console.log("no recommandInList");
 			recommandInList = true;
 			params.append('recommandInList', recommandInList);
 			
 			window.location.search = params.toString();
 		}
-		console.log(params);
 	})
 
 	$('.hide-recommendation').click(function(e)
 	{
-		console.log("hide");
 		e.preventDefault();
 
 		var id = $(this).parents('li').attr('data-id');
-		console.log(id);
 		var hidden = readHidden(userName);
 		hidden.push(id);
 		writeHidden(userName, hidden);
