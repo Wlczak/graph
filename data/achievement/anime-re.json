@@ -5,10 +5,17 @@
     [
         {
             "threshold": "20+",
-            "id": "anime-re",
+            "id": "anime-re-1",
             "level": "Looping...",
             "title": "Endless Eight",
             "desc": "Is the replay button stuck?"
+        },
+        {
+            "threshold": "40+",
+            "id": "anime-re-2",
+            "level": "Again... Again... Again... Again... Again... Again... Again...",
+            "title": "Endless Eight",
+            "desc": "Is the replay button stuck? Again..."
         }
     ],
     "requirement":
