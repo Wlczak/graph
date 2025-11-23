@@ -158,4 +158,26 @@ $(function()
 			});
 		}
 	}
+
+	$('#more-recs').click(function(e)
+	{
+		e.preventDefault();
+
+		let params = new URLSearchParams(window.location.search);
+		if (params.has('goal'))
+		{
+			console.log("has goal");
+			goal = parseInt(params.get('goal'));
+			params.set('goal', goal + 10);
+			
+			window.location.search = params.toString();
+		} else {
+			console.log("no goal");
+			goal = 10;
+			params.append('goal', goal);
+			
+			window.location.search = params.toString();
+		}
+		console.log(params);
+	})
 });
