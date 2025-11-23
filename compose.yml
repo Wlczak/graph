@@ -1,8 +1,0 @@
-name: anime-graph
-services:
-  php:
-    build: .
-    ports:
-      - "6487:80"
-    volumes:
-      - ./:/app
