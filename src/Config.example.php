@@ -41,6 +41,7 @@ class Config extends Singleton
     static $keepOldLogs;
     static $globalsCachePath;
     static $userQueueSizesPath;
+    static $defaultRecommendationGoal;
     static $mediaDirectory;
     static $imageDirectory;
     static $mediaUrl;
@@ -106,6 +107,7 @@ class Config extends Singleton
         self::$logsPath = $dataRootDir . 'logs';
         self::$globalsCachePath = $dataRootDir . 'globals-cache.json';
         self::$userQueueSizesPath = $dataRootDir . 'queue-sizes.json';
+        self::$defaultRecommendationGoal = 20;
 
         self::$mediaDirectory = $htmlRootDir . DIRECTORY_SEPARATOR . 'media';
         self::$imageDirectory = $htmlRootDir . DIRECTORY_SEPARATOR . 'image';
