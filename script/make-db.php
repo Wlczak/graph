@@ -69,7 +69,8 @@ try
 	foreach (Database::getAllDbNames() as $dbName)
 	{
 		$path2 = Config::$dbPath . DIRECTORY_SEPARATOR . $dbName;
-		copy($path1, $path2);
+		if (!file_exists($path2))
+			copy($path1, $path2);
 	}
 	unlink($path1);
 
